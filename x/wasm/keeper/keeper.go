@@ -105,6 +105,9 @@ type Keeper struct {
 	// propagate gov authZ to sub-messages
 	propagateGovAuthorization map[types.AuthorizationPolicyAction]struct{}
 
+	// Binds port for Eureka
+	bindEurekaPort func(ctx sdk.Context, contractAddr sdk.AccAddress) (string, error)
+
 	// the address capable of executing a MsgUpdateParams message. Typically, this
 	// should be the x/gov module account.
 	authority string
@@ -374,6 +377,18 @@ func (k Keeper) instantiate(
 		ibcPort := PortIDForContract(contractAddress)
 		contractInfo.IBCPortID = ibcPort
 	}
+	// Should we bind the port in some special way for Eureka?
+	//
+	// Analysis report is missing the `HasEurekaEntryPoints` field.
+	//
+	// if report.HasEurekaEntryPoints {
+	// register Eureka port
+	eurekaPort, err := k.ensureIbcPort(sdkCtx, contractAddress)
+	if err != nil {
+		return nil, nil, err
+	}
+	contractInfo.EurekaPortID = eurekaPort
+	// }
 
 	// store contract before dispatch so that contract could be called back
 	historyEntry := contractInfo.InitialHistory(initMsg)
@@ -538,6 +553,19 @@ func (k Keeper) migrate(
 		return nil, err
 	}
 	k.mustStoreContractInfo(ctx, contractAddress, contractInfo)
+
+	// Should we bind the port in some special way for Eureka?
+	//
+	// Analysis report is missing the `HasEurekaEntryPoints` field.
+	//
+	// if report.HasEurekaEntryPoints && contractInfo.EurekaPortID != "" {
+	// register Eureka port
+	eurekaPort, err := k.ensureIbcPort(sdkCtx, contractAddress)
+	if err != nil {
+		return nil, err
+	}
+	contractInfo.EurekaPortID = eurekaPort
+	// }
 
 	sdkCtx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeMigrate,
