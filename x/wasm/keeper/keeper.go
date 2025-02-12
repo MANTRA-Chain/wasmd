@@ -380,7 +380,7 @@ func (k Keeper) instantiate(
 	// Should we bind the port in some special way for Eureka?
 	if report.HasEurekaEntryPoints {
 		// register Eureka port
-		eurekaPort, err := k.ensureIbcPort(sdkCtx, contractAddress)
+		eurekaPort, err := k.bindEurekaPort(sdkCtx, contractAddress)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -554,7 +554,7 @@ func (k Keeper) migrate(
 	// Should we bind the port in some special way for Eureka?
 	if report.HasEurekaEntryPoints && contractInfo.EurekaPortID != "" {
 		// register Eureka port
-		eurekaPort, err := k.ensureIbcPort(sdkCtx, contractAddress)
+		eurekaPort, err := k.bindEurekaPort(sdkCtx, contractAddress)
 		if err != nil {
 			return nil, err
 		}
