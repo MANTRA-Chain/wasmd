@@ -4,6 +4,8 @@ import (
 	"time"
 
 	wasmvmtypes "github.com/CosmWasm/wasmvm/v2/types"
+	channeltypesv2 "github.com/cosmos/ibc-go/v10/modules/core/04-channel/v2/types"
+	ibcapi "github.com/cosmos/ibc-go/v10/modules/core/api"
 
 	errorsmod "cosmossdk.io/errors"
 
@@ -11,17 +13,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm/types"
-	channeltypesv2 "github.com/cosmos/ibc-go/v10/modules/core/04-channel/v2/types"
-	ibcapi "github.com/cosmos/ibc-go/v10/modules/core/api"
 )
 
 var _ ibcapi.IBCModule = EurekaHandler{}
-
-// internal interface that is implemented by ibc middleware
-type appVersionGetter interface {
-	// GetAppVersion returns the application level version with all middleware data stripped out
-	GetAppVersion(ctx sdk.Context, portID, channelID string) (string, bool)
-}
 
 type EurekaHandler struct {
 	keeper types.EurekaContractKeeper
