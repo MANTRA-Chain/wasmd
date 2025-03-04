@@ -105,9 +105,6 @@ type Keeper struct {
 	// propagate gov authZ to sub-messages
 	propagateGovAuthorization map[types.AuthorizationPolicyAction]struct{}
 
-	// Binds port for Eureka
-	customBindEurekaPort func(ctx sdk.Context, contractAddr sdk.AccAddress) (string, error)
-
 	// the address capable of executing a MsgUpdateParams message. Typically, this
 	// should be the x/gov module account.
 	authority string
@@ -380,11 +377,9 @@ func (k Keeper) instantiate(
 	// Should we bind the port in some special way for Eureka?
 	if report.HasEurekaEntryPoints {
 		// register Eureka port
-		eurekaPort, err := k.bindEurekaPort(sdkCtx, contractAddress)
-		if err != nil {
-			return nil, nil, err
-		}
-		contractInfo.EurekaPortID = eurekaPort
+		ibcV2Port := IbcV2PortIDForContract(contractAddress)
+		// k.ibcKeeper.AddRoute(ibcV2Port, )
+		contractInfo.EurekaPortID = ibcV2Port
 	}
 
 	// store contract before dispatch so that contract could be called back
@@ -417,14 +412,6 @@ func (k Keeper) instantiate(
 	}
 
 	return contractAddress, data, nil
-}
-
-func (k Keeper) bindEurekaPort(sdkCtx sdk.Context, contractAddress sdk.AccAddress) (string, error) {
-	if k.customBindEurekaPort != nil {
-		return k.customBindEurekaPort(sdkCtx, contractAddress)
-	} else {
-		return k.ensureIbcPort(sdkCtx, contractAddress)
-	}
 }
 
 // Execute executes the contract instance
@@ -562,11 +549,9 @@ func (k Keeper) migrate(
 	// Should we bind the port in some special way for Eureka?
 	if report.HasEurekaEntryPoints && contractInfo.EurekaPortID != "" {
 		// register Eureka port
-		eurekaPort, err := k.bindEurekaPort(sdkCtx, contractAddress)
-		if err != nil {
-			return nil, err
-		}
-		contractInfo.EurekaPortID = eurekaPort
+		ibcV2Port := IbcV2PortIDForContract(contractAddress)
+		// k.ibcKeeper.AddRoute(ibcV2Port, )
+		contractInfo.EurekaPortID = ibcV2Port
 	}
 
 	sdkCtx.EventManager().EmitEvent(sdk.NewEvent(

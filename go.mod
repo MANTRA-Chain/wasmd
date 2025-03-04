@@ -3,7 +3,7 @@ module github.com/CosmWasm/wasmd
 go 1.23.6
 
 require (
-	github.com/CosmWasm/wasmvm/v2 v2.2.2-0.20250213132354-b95e700963e8
+	github.com/CosmWasm/wasmvm/v2 v2.2.2-0.20250304152826-5689cc9f691e
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
 	github.com/cosmos/cosmos-sdk v0.50.12
 	github.com/cosmos/gogogateway v1.2.0 // indirect
@@ -221,7 +221,6 @@ require (
 
 replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
-	github.com/CosmWasm/wasmvm/v2 => github.com/CosmWasm/wasmvm/v2 v2.2.2-0.20250212100917-aea2a1cdd849
 	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
 	// See: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
